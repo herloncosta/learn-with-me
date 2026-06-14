@@ -2,6 +2,8 @@
   <h1>learn-with-me</h1>
   <p>
     <strong>Software engineering blog — built with Astro 5, MDX & Tailwind CSS v4</strong>
+    <br/>
+    <em>Free and open source software</em>
   </p>
   <p>
     <a href="https://lwm-blog.netlify.app">lwm-blog.netlify.app</a>
