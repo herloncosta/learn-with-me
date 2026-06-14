@@ -9,7 +9,7 @@
     <a href="https://lwm-blog.netlify.app">lwm-blog.netlify.app</a>
   </p>
   <p>
-    <img src="https://img.shields.io/github/license/herloncosta/learn-with-me" alt="License">
+    <img src="https://img.shields.io/badge/software%20livre-MIT-blue" alt="Software Livre">
     <img src="https://img.shields.io/github/last-commit/herloncosta/learn-with-me" alt="Last commit">
   </p>
 </div>
