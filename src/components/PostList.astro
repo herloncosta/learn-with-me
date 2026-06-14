@@ -1,0 +1,103 @@
+---
+import PostCard from "./PostCard.astro";
+
+export interface Props {
+  posts: Array<{
+    title: string;
+    description: string;
+    pubDate: Date;
+    slug: string;
+  }>;
+  pageSize?: number;
+}
+
+const { posts, pageSize = 3 } = Astro.props;
+---
+
+<div class="post-list" data-page-size={pageSize}>
+  <div class="top-sentinel"></div>
+
+  {posts.map((post, i) => (
+    <div class="post-wrapper" data-index={i}>
+      <PostCard
+        title={post.title}
+        description={post.description}
+        pubDate={post.pubDate}
+        slug={post.slug}
+      />
+    </div>
+  ))}
+
+  {posts.length > pageSize && <div class="sentinel"></div>}
+</div>
+
+<button
+  class="back-to-top fixed bottom-6 right-6 z-50 size-10 flex items-center justify-center border border-border bg-surface text-ink-muted cursor-pointer opacity-0 pointer-events-none transition-all duration-200 ease-out hover:text-primary hover:border-primary focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
+  aria-label="Voltar ao topo"
+>
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M18 15l-6-6-6 6" />
+  </svg>
+</button>
+
+<script>
+  import { animate } from "framer-motion/dom";
+
+  const list = document.querySelector(".post-list");
+  const pageSize = Number(list.dataset.pageSize);
+  const wrappers = list.querySelectorAll(".post-wrapper");
+  const sentinel = list.querySelector(".sentinel");
+  const topSentinel = list.querySelector(".top-sentinel");
+  const backBtn = document.querySelector(".back-to-top");
+
+  let visible = pageSize;
+
+  function reveal(el) {
+    animate(el, { opacity: [0, 1], y: [12, 0] }, { duration: 0.35, ease: "easeOut" });
+  }
+
+  wrappers.forEach((w, i) => {
+    if (i >= pageSize) w.style.display = "none";
+  });
+
+  if (sentinel) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        const next = visible + pageSize;
+        for (let i = visible; i < next && i < wrappers.length; i++) {
+          wrappers[i].style.display = "";
+          reveal(wrappers[i]);
+        }
+        visible = next;
+        if (visible >= wrappers.length) observer.disconnect();
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(sentinel);
+  }
+
+  if (backBtn && topSentinel) {
+    const topObserver = new IntersectionObserver(
+      ([entry]) => {
+        backBtn.style.opacity = entry.isIntersecting ? "0" : "1";
+        backBtn.style.pointerEvents = entry.isIntersecting ? "none" : "auto";
+      },
+      { threshold: 0 }
+    );
+    topObserver.observe(topSentinel);
+
+    backBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+</script>

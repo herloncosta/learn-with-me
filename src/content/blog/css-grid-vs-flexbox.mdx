@@ -1,0 +1,55 @@
+---
+title: CSS Grid vs Flexbox — Quando Usar Cada Um
+description: Os dois sistemas de layout do CSS não são concorrentes, e sim ferramentas complementares.
+pubDate: 2026-06-08
+---
+
+A pergunta "Grid ou Flexbox?" é uma das mais frequentes no CSS moderno. A resposta curta: **use os dois, cada um no seu contexto.**
+
+## Flexbox: layout unidimensional
+
+Flexbox organiza elementos **numa direção** (linha OU coluna). Ideal para:
+
+- Navbars
+- Listas de cards com wrap
+- Centralização vertical
+- Componentes com tamanho dinâmico
+
+```css
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+```
+
+## Grid: layout bidimensional
+
+Grid organiza elementos **nas duas direções** ao mesmo tempo. Ideal para:
+
+- Layout de página completo
+- Galerias com linhas e colunas
+- Dashboards
+- Componentes que precisam de alinhamento cruzado
+
+```css
+.page {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  grid-template-rows: auto 1fr auto;
+  gap: 1rem;
+}
+```
+
+## Quando um invade o território do outro
+
+Flexbox pode simular grid com `flex-wrap`, e Grid pode simular flex com `auto-fill`. Mas o *intent* é diferente:
+
+| Situação | Escolha |
+|---|---|
+| Um item empurra os irmãos | Flexbox |
+| Itens alinhados em grelha | Grid |
+| Distribuição dinâmica com wrap | Flexbox |
+| Template de página fixo | Grid |
+
+> Se você está escrevendo `grid-template-areas` pra uma navbar de 3 links, talvez flexbox seja mais simples. Se está usando `flex-wrap` pra alinhar header + main + footer... Grid.

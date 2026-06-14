@@ -1,0 +1,58 @@
+---
+title: Docker para Ambientes de Desenvolvimento
+description: Use Docker não só em produção — ele pode padronizar o setup de todo o time.
+pubDate: 2026-06-04
+---
+
+Docker não é só para produção. Um `docker-compose.yml` bem escrito elimina o "na minha máquina funciona".
+
+## Setup básico
+
+```yaml
+# docker-compose.yml
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - DATABASE_URL=postgres://db:5432/myapp
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+```
+
+## Multi-stage builds
+
+Separa dependências de build das de runtime:
+
+```dockerfile
+FROM node:22 AS builder
+WORKDIR /app
+COPY package*.json .
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:22-slim
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+CMD ["node", "dist/index.js"]
+```
+
+## Dicas
+
+- Use `.dockerignore` para não copiar `node_modules`
+- Prefira imagens slim ou alpine
+- Bind mounts para hot reload em dev
+- Network interna do compose elimina `localhost` magic
+
+> Docker em desenvolvimento não é sobre isolamento — é sobre replicabilidade. Seu setup funciona igual na máquina do novo dev e no CI.

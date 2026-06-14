@@ -1,0 +1,51 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PostCard from "../components/PostCard.astro";
+import { getCollection } from "astro:content";
+
+const posts = await getCollection("blog", ({ data }) => !data.draft);
+
+posts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const latest = posts.slice(0, 4);
+---
+
+<BaseLayout
+  title="learn-with-me"
+  description="A software engineering blog"
+>
+  <section class="mb-12">
+    <h1 class="text-[clamp(1.75rem,5vw,2.5rem)] font-bold leading-tight mb-2 text-ink">
+      learn-with-me
+    </h1>
+    <p class="text-sm text-ink-muted max-w-[34rem]">
+      Software engineering, one post at a time.
+    </p>
+  </section>
+
+  <section>
+    {latest.length > 0 ? (
+      latest.map((post) => (
+        <PostCard
+          title={post.data.title}
+          description={post.data.description}
+          pubDate={post.data.pubDate}
+          slug={post.id}
+        />
+      ))
+    ) : (
+      <p class="text-sm text-ink-dim italic">No posts yet. Coming soon.</p>
+    )}
+  </section>
+
+  {posts.length > 4 && (
+    <a
+      href="/blog"
+      class="inline-block mt-6 text-xs text-primary"
+    >
+      View all posts &rarr;
+    </a>
+  )}
+</BaseLayout>

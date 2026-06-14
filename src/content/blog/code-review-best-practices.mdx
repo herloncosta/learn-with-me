@@ -1,0 +1,51 @@
+---
+title: Code Review — O Que Olhar Além do Código
+description: Boas revisões vão além de syntax — avaliam design, legibilidade, e contexto.
+pubDate: 2026-05-30
+---
+
+Code review não é caça a bugs. É uma conversa sobre design e manutenibilidade.
+
+## O que revisar
+
+### 1. Design do código
+
+- A solução resolve o problema certo?
+- Teria sido mais simples fazer diferente?
+- A abstração está no nível adequado?
+
+### 2. Legibilidade
+
+- Nomes de variáveis/funções revelam intenção?
+- O fluxo é fácil de seguir?
+- Comentários explicam "por quê", não "o quê"?
+
+```ts
+// ❌ Comentário inútil
+// incrementa o contador
+count += 1;
+
+// ✅ Comentário útil
+// +1 porque o índice do Postgres começa em 1
+count += 1;
+```
+
+### 3. Testes
+
+- O teste cobre o cenário descrito no PR?
+- Testa bordas (erro, vazio, nulo)?
+- O teste é legível e resiliente?
+
+### 4. Segurança
+
+- Dados de entrada são validados?
+- SQL injection / XSS?
+- Tokens expostos?
+
+## Tom da revisão
+
+- Seja específico: "essa variável poderia ser `users` em vez de `data`"
+- Sugira, não exija: "o que acha de extrair essa lógica?"
+- Separe blockers de nits: marque o que precisa mudar vs o que é gosto
+
+> Uma boa revisão deixa o código melhor e o autor mais confiante. Se só aponta defeitos, é fiscalização, não colaboração.

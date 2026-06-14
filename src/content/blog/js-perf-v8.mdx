@@ -1,0 +1,71 @@
+---
+title: V8 Hidden Classes e Inline Caching
+description: Entenda como a engine otimiza seu código em tempo real e como escrever código "V8-friendly".
+pubDate: 2026-06-11
+---
+
+O V8 otimiza JavaScript compilando para código nativo via JIT. Duas técnicas são centrais: **Hidden Classes** e **Inline Caching**.
+
+## Hidden Classes
+
+Quando você cria um objeto, o V8 atribui uma *hidden class* (ou *map*) a ele. Propriedades acessadas no mesmo *shape* compartilham a mesma classe:
+
+```js
+function Point(x, y) {
+  this.x = x; // hidden class: C1
+  this.y = y; // hidden class: C2 (transição de C1)
+}
+
+const a = new Point(1, 2);
+const b = new Point(3, 4); // MESMA hidden class = otimizado
+```
+
+Agora, **quebre o shape** e o V8 desiste:
+
+```js
+const a = new Point(1, 2);
+a.z = 3; // nova propriedade depois da criação = shape diferente
+```
+
+Cada shape diferente força o V8 a desotimizar. Em loops com milhares de objetos, o custo é real.
+
+## Inline Caching
+
+Quando você acessa `obj.prop` num loop, o V8 cachead o resultado da lookup. Se o shape do objeto muda entre iterações, o cache é invalidado:
+
+```js
+// Ruim: shapes misturados no mesmo array
+const items = [
+  { x: 1, y: 2 },
+  { x: 3, y: 4, extra: true }, // shape diferente!
+];
+
+// Bom: shapes consistentes
+const items = [
+  { x: 1, y: 2, extra: false },
+  { x: 3, y: 4, extra: true },
+];
+```
+
+## Na prática
+
+1. **Sempre inicialize propriedades no construtor** — mesmo com `null` ou `undefined`
+2. **Não adicione propriedades depois** — prefira objetos separados
+3. **Monotipifique arrays** — não misture tipos num mesmo array
+4. **Prefira classes a dicionários genéricos** quando o shape é fixo
+
+```js
+// Prefira
+class User {
+  constructor(name) {
+    this.name = name;
+    this.role = "viewer";
+  }
+}
+
+// Evite
+function createUser(name) {
+  return { name, role: "viewer" };
+}
+// (classes são otimizadas consistentemente)
+```

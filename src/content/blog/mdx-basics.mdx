@@ -1,0 +1,31 @@
+---
+title: Escrevendo com MDX
+description: Como usar componentes interativos dentro dos seus artigos usando MDX no Astro.
+pubDate: 2026-06-14
+---
+
+MDX é Markdown com a superpotência de usar **componentes** dentro do conteúdo.
+
+## Por que MDX?
+
+Com MDX você pode:
+
+- Importar e usar componentes Astro/React/Vue/etc dentro do seu artigo
+- Criar layouts customizados
+- Reutilizar elementos complexos sem repetir HTML
+
+### Exemplo
+
+Você pode ter um código inline como `const x = 42` ou blocos destacados:
+
+```ts
+function greet(name: string): string {
+  return `Hello, ${name}!`;
+}
+```
+
+> MDX transforma seu conteúdo em componentes vivos, não apenas em texto estático.
+
+## Próximos passos
+
+Em breve vamos explorar temas mais avançados como Server Islands, View Transitions, e otimização de performance com Astro.

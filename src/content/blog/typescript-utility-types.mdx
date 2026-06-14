@@ -1,0 +1,56 @@
+---
+title: Utility Types no TypeScript
+description: Conheça os tipos embutidos mais úteis do TypeScript e como eles podem transformar seu código.
+pubDate: 2026-06-09
+---
+
+TypeScript oferece um conjunto de **utility types** que manipulam tipos existentes para criar novos. Dominar eles reduz drasticamente código repetitivo.
+
+## Partial\<T\>
+
+Todas as propriedades se tornam opcionais:
+
+```ts
+interface User {
+  name: string;
+  email: string;
+  role: "admin" | "viewer";
+}
+
+function updateUser(id: string, changes: Partial<User>) {
+  // só precisa passar os campos que mudaram
+}
+```
+
+## Pick\<T, K\> e Omit\<T, K\>
+
+```ts
+type UserPublic = Omit<User, "email">; // só nome + role
+type UserCredentials = Pick<User, "email">;
+```
+
+## Record\<K, T\>
+
+```ts
+type PageViews = Record<string, number>;
+// { [key: string]: number }
+```
+
+## ReturnType\<T\>
+
+Extrai o tipo de retorno de uma função:
+
+```ts
+function fetchUser() {
+  return { id: 1, name: "Alice" };
+}
+
+type User = ReturnType<typeof fetchUser>;
+// { id: number; name: string }
+```
+
+## Na prática
+
+Combine utility types para criar tipos derivados sem duplicação. Seu schema central vive num lugar só; os derived types nascem dele.
+
+> Utility types não são só conveniência — são a diferença entre tipos que evoluem junto com o código e tipos que apodrecem em sync manual.

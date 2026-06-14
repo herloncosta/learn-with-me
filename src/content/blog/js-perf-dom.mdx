@@ -1,0 +1,59 @@
+---
+title: Performance no DOM — Layout Thrashing e Reflows
+description: Por que manipular o DOM pode ser 100x mais lento que você imagina.
+pubDate: 2026-06-10
+---
+
+O DOM é lento. Não por natureza, mas porque cada leitura e escrita força o browser a recalcular layouts. O problema clássico é **Layout Thrashing**.
+
+## O que é Layout Thrashing
+
+```js
+// ❌ 1000 reflows forçados
+for (let i = 0; i < 1000; i++) {
+  const w = element.offsetWidth; // lê → força layout
+  element.style.width = w + 1 + "px"; // escreve → invalida
+}
+```
+
+Cada `offsetWidth` força o browser a recalcular o layout *na hora* pra te dar um valor correto. Faça isso num loop e sua UI congela.
+
+## Batch reads + writes
+
+A solução é separar leitura de escrita em dois batches:
+
+```js
+// ✅ Lê tudo primeiro
+const widths = elements.map((el) => el.offsetWidth);
+
+// ✅ Depois escreve tudo
+elements.forEach((el, i) => {
+  el.style.width = widths[i] + 1 + "px";
+});
+```
+
+## Propriedades que disparam reflow
+
+As mais comuns: `offsetHeight`, `offsetWidth`, `getBoundingClientRect()`, `scrollTop`, `clientTop`, `computedStyle`.
+
+## requestAnimationFrame
+
+Use `rAF` para agrupar writes no próximo frame visual:
+
+```js
+requestAnimationFrame(() => {
+  el.style.transform = `translateX(${x}px)`;
+});
+```
+
+## Virtual Scrolling
+
+Para listas com centenas de itens, o DOM real precisa ser menor que o dataset. Libraries como TanStack Virtual só renderizam os itens visíveis + um buffer.
+
+```js
+// Conceito: windowed rendering
+const visibleItems = allItems.slice(start, end);
+// Só N elementos no DOM, não 10.000
+```
+
+> Meça antes de otimizar. Um `console.time` muitas vezes revela que o gargalo não está onde você acha.

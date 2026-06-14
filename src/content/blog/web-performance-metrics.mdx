@@ -1,0 +1,38 @@
+---
+title: Métricas de Performance Web que Realmente Importam
+description: Além do Lighthouse, quais métricas você deve monitorar e por quê.
+pubDate: 2026-06-06
+---
+
+O Lighthouse é uma ferramenta excelente, mas não é a única métrica que importa. Aqui estão as que realmente impactam a experiência do usuário.
+
+## Core Web Vitals
+
+### LCP (Largest Contentful Paint)
+
+Tempo que o maior elemento visível leva para renderizar. Meta: < 2.5s.
+
+- **O que afeta**: imagens pesadas, render blocking resources, servidor lento
+- **Como melhorar**: preload de hero images, otimizar TTFB, compression
+
+### INP (Interaction to Next Paint)
+
+Tempo de resposta a interações do usuário (cliques, teclado). Meta: < 200ms.
+
+- **O que afeta**: JavaScript síncrono longo, heavy layouts
+- **Como melhorar**: lazy load de JS, `requestIdleCallback`, web workers
+
+### CLS (Cumulative Layout Shift)
+
+Movimento inesperado de elementos na tela. Meta: < 0.1.
+
+- **O que afeta**: imagens sem dimensões, font swapping, embeds dinâmicos
+- **Como melhorar**: `width` + `height` em imagens, `font-display: optional`
+
+## Métricas de Negócio
+
+- **TTFB** (Time to First Byte): latency do servidor
+- **FID** (First Input Delay): substituído por INP, mas conceito similar
+- **Time to Interactive**: quando a página responde confiavelmente
+
+> Performance não é um número — é como o usuário se sente usando seu site. Uma métrica boa é uma hipótese sobre a experiência real.

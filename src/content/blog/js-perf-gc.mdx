@@ -1,0 +1,57 @@
+---
+title: Entendendo o Garbage Collection no JavaScript
+description: Como o V8 gerencia memória automaticamente e por que isso impacta a performance da sua aplicação.
+pubDate: 2026-06-12
+---
+
+O JavaScript é uma linguagem com gerenciamento automático de memória. O **Garbage Collector** (GC) roda em background, liberando objetos que não são mais alcançáveis. Mas esse conforto tem um custo: pausas eventuais no event loop.
+
+## Como o V8 gerencia memória
+
+O V8 divide o heap em duas gerações:
+
+- **Young Generation**: objetos recém-criados. Pequena, coleta frequente.
+- **Old Generation**: objetos que sobreviveram a coletas anteriores. Grande, coleta rara.
+
+```js
+// Objetos na young generation
+function process() {
+  const data = { value: 42 }; // morre no fim da função
+  return data.value * 2;
+}
+```
+
+## O custo das closures
+
+Closures mantêm o escopo inteiro vivo, mesmo quando você só precisa de uma variável:
+
+```js
+function createHandler(id) {
+  return function () {
+    console.log(id); // só precisa de `id`
+    // mas mantém TODO o escopo vivo
+  };
+}
+```
+
+**Solução**: desestruturar no topo ou usar factory patterns mais enxutos.
+
+## Armadilhas comuns
+
+- **Referências circulares** em event listeners não removidos
+- **Caches sem limite** que crescem indefinidamente
+- **Objetos temporários** dentro de loops (forçam alocações)
+
+```js
+// Ruim — aloca um array novo a cada 60ms
+setInterval(() => {
+  const items = [1, 2, 3, 4, 5];
+  items.forEach(render);
+}, 60);
+
+// Melhor — reusa
+const items = [1, 2, 3, 4, 5];
+setInterval(() => items.forEach(render), 60);
+```
+
+> GC pressure é silenciosa. Não espere o frame drop pra olhar pra ela.

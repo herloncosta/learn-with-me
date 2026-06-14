@@ -1,0 +1,46 @@
+---
+title: Git Workflow — Estratégias de Branch e Commit
+description: Como organizar branches, escrever commits legíveis e evitar dores de cabeça em equipe.
+pubDate: 2026-06-05
+---
+
+Um bom workflow de Git não é sobre regras — é sobre comunicação. A árvore de commits deve contar a história do projeto.
+
+## Commits atômicos
+
+Cada commit deve representar **uma mudança lógica**:
+
+```
+feat: add user avatar upload
+fix: correct pagination offset on search
+refactor: extract image processing to service
+```
+
+Use conventional commits para comunicação uniforme. O diff fica pequeno, a revisão fica rápida, o `git bisect` funciona.
+
+## Branch strategy
+
+### Trunk-based (recomendado)
+
+- `main` sempre deployável
+- Branches curtas (1-2 dias)
+- Merge frequente
+
+```
+main ──●──●──●──●──●──●──●
+        \     /
+feature  ●──●
+```
+
+### Git Flow (para releases versionadas)
+
+- `main` + `develop` + `release/*` + `hotfix/*`
+- Mais overhead, necessário para software empacotado
+
+## Dicas
+
+- **Rebase antes de merge**: mantém história linear
+- **Não force push em branches compartilhadas**: a não ser que o time combine
+- **`git commit --fixup`**: para correções rápidas sem poluir a história
+
+> O melhor workflow é o que seu time segue consistentemente, não o que está na moda. Consistência > perfeição.

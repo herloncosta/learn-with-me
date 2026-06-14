@@ -1,0 +1,65 @@
+---
+title: Padrões de Error Handling em Aplicações Modernas
+description: Como tratar erros de forma consistente sem espalhar try/catch por todo o código.
+pubDate: 2026-06-02
+---
+
+Error handling consistente é sinal de maturidade no código. Aqui estão padrões que funcionam em qualquer linguagem.
+
+## Result Type (Either)
+
+Em vez de lançar exceções, retorne um tipo que representa sucesso ou falha:
+
+```ts
+type Result<T, E = Error> =
+  | { ok: true; data: T }
+  | { ok: false; error: E };
+
+async function fetchData(): Promise<Result<User>> {
+  try {
+    const res = await fetch("/api/user");
+    if (!res.ok) return { ok: false, error: new Error("HTTP Error") };
+    return { ok: true, data: await res.json() };
+  } catch (e) {
+    return { ok: false, error: e };
+  }
+}
+
+// Uso
+const result = await fetchData();
+if (!result.ok) return showError(result.error);
+render(result.data);
+```
+
+## Error Boundary (React)
+
+Para UI que não pode quebrar:
+
+```tsx
+class ErrorBoundary extends React.Component {
+  state = { hasError: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  render() {
+    return this.state.hasError
+      ? <Fallback />
+      : this.props.children;
+  }
+}
+```
+
+## Log estruturado
+
+Nunca `console.log(error)`. Prefira:
+
+```ts
+logger.error({
+  message: "Failed to fetch user",
+  userId: id,
+  error: error.message,
+  stack: error.stack,
+});
+```
+
+> Erro não tratado é dívida técnica com juros compostos. Um `catch` vazio ou um `console.error` sem contexto é pior que não capturar.

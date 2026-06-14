@@ -1,0 +1,57 @@
+---
+title: Estratégias de Teste — Do Unitário ao E2E
+description: Como estruturar uma pirâmide de testes que equilibre cobertura, velocidade e confiança.
+pubDate: 2026-06-03
+---
+
+Testes dão confiança para refatorar. Mas o tipo errado de teste no lugar errado drena tempo sem entregar valor.
+
+## A pirâmide revisitada
+
+```
+    ╱╲
+   ╱ E2E ╲       ← poucos, lentos, caros
+  ╱────────╲
+ ╱ Integration ╲  ← médios, moderados
+╱────────────────╲
+╱   Unitários     ╲  ← muitos, rápidos, baratos
+╱────────────────────╲
+```
+
+### Unitários
+
+Testam uma função/módulo isolado. Rápidos, fáceis de escrever. **Devem ser a maioria.**
+
+```ts
+describe("formatDate", () => {
+  it("formats ISO string to pt-BR", () => {
+    expect(formatDate("2026-06-03")).toBe("03/06/2026");
+  });
+});
+```
+
+### Integração
+
+Testam a interação entre módulos (banco + API, serviço + cache). Garantem que as peças se encaixam.
+
+### E2E
+
+Testam o fluxo completo do usuário no browser. Poucos, críticos. **Cobrem as jornadas principais.**
+
+```ts
+test("user can create a post", async ({ page }) => {
+  await page.goto("/login");
+  await page.fill("#email", "user@test.com");
+  await page.click("button[type=submit]");
+  await expect(page.locator("h1")).toHaveText("Dashboard");
+});
+```
+
+## Dicas práticas
+
+- Teste comportamento, não implementação
+- Mocks são necessários, mas não exagere
+- Prefira `describe/it` aninhado a um único teste enorme
+- CI deve rodar testes a cada push
+
+> Se seu teste quebra quando você renomeia uma variável interna, ele está testando implementação, não comportamento.

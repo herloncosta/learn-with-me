@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostList from "../../components/PostList.astro";
+import { getCollection } from "astro:content";
+
+const posts = await getCollection("blog", ({ data }) => !data.draft);
+
+posts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<BaseLayout title="Posts — learn-with-me" description="All blog posts">
+  <a href="/" class="text-xs text-ink-muted inline-block mb-4 hover:text-primary">
+    &larr; home
+  </a>
+
+  <h1 class="text-2xl font-bold mb-8 text-ink">Posts</h1>
+
+  {posts.length > 0 ? (
+    <PostList
+      posts={posts.map((p) => ({
+        title: p.data.title,
+        description: p.data.description,
+        pubDate: p.data.pubDate,
+        slug: p.id,
+      }))}
+    />
+  ) : (
+    <p class="text-sm text-ink-dim italic">No posts yet. Coming soon.</p>
+  )}
+</BaseLayout>

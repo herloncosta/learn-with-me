@@ -1,0 +1,66 @@
+---
+title: Princípios de Design de API REST
+description: O que faz uma API ser boa de consumir — consistência, previsibilidade e pragmatismo.
+pubDate: 2026-06-01
+---
+
+Uma API bem desenhada é consistente, previsível e pragmática. Aqui estão os princípios que guiam as melhores APIs públicas.
+
+## Naming
+
+- Substantivos no plural: `/users`, `/posts`, `/comments`
+- Verbos só em ações não-CRUD: `/posts/1/publish`
+- Consistência de case: prefira `kebab-case` ou `snake_case`, nunca misture
+
+```http
+GET /users?page=1&per_page=20
+POST /users
+GET /users/42
+PATCH /users/42
+DELETE /users/42
+```
+
+## Status codes
+
+Use a semântica correta:
+
+| Código | Significado | Quando usar |
+|---|---|---|
+| 200 | OK | GET, PATCH bem-sucedido |
+| 201 | Created | POST que criou recurso |
+| 204 | No Content | DELETE bem-sucedido |
+| 400 | Bad Request | Validação falhou |
+| 401 | Unauthorized | Sem autenticação |
+| 404 | Not Found | Recurso inexistente |
+| 422 | Unprocessable | Dados inválidos |
+| 429 | Too Many Requests | Rate limit |
+| 500 | Internal Error | Algo quebrou no servidor |
+
+## Paginação
+
+```json
+{
+  "data": [...],
+  "meta": {
+    "page": 1,
+    "per_page": 20,
+    "total": 142
+  }
+}
+```
+
+## Versionamento
+
+Prefira header `Accept` a prefixo de URL:
+
+```http
+Accept: application/vnd.api+json;version=2
+```
+
+## Filtering, Sorting, Fields
+
+```http
+GET /users?sort=-created_at&name=alice&fields=id,name,email
+```
+
+> Uma API boa é aquela que o consumidor consegue adivinhar o endpoint sem ler a documentação. Consistência é a base.

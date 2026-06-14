@@ -1,0 +1,50 @@
+---
+title: Async/Await — Padrões que Evitam Callback Hell
+description: Técnicas práticas para escrever código assíncrono legível e resiliente.
+pubDate: 2026-06-07
+---
+
+Async/await foi um divisor de águas no JavaScript. Mas com poder vem responsabilidade — é fácil cair em armadilhas de performance e legibilidade.
+
+## Sequential vs Parallel
+
+```js
+// ❌ Lento: executa uma requisição depois da outra
+const user = await fetchUser(id);
+const posts = await fetchPosts(user.id);
+
+// ✅ Rápido: paralelo quando não há dependência
+const [user, posts] = await Promise.all([
+  fetchUser(id),
+  fetchPostsByUser(id),
+]);
+```
+
+## Error handling limpo
+
+Evite try/catch gigantes:
+
+```js
+function safeAsync(promise) {
+  return promise.then(
+    (data) => [null, data],
+    (error) => [error, null]
+  );
+}
+
+const [err, user] = await safeAsync(fetchUser(id));
+if (err) return showError(err);
+```
+
+## Timeout em promises
+
+```js
+function withTimeout(promise, ms) {
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("timeout")), ms)
+  );
+  return Promise.race([promise, timeout]);
+}
+```
+
+> Async/await não elimina a necessidade de pensar concorrência — só torna a sintaxe mais limpa. O reassignment loop (await dentro de for) ainda é sequencial.
