@@ -43,10 +43,24 @@ npm run preview    # preview the built site
 title: "Post Title"
 description: "Brief description"
 pubDate: 2026-01-01
-draft: false       # omit or set to true to hide from listing
+updatedDate: 2026-01-10   # optional
+draft: false              # omit or set to true to hide from listing
 ```
 
 4. Restart the dev server — routing is automatic
+
+### Contributing a post via pull request
+
+You can submit your own article by opening a pull request. Follow the steps below:
+
+1. **Fork** the repository and create a new branch
+2. **Create** a `.mdx` file under `src/content/blog/` with a descriptive slug name (e.g. `meu-artigo.mdx`)
+3. **Add frontmatter** at the top of the file (see schema above)
+4. **Write your article** in Markdown with MDX — you can use JSX components, code blocks, tables, images, and more
+5. **Preview locally** (optional but recommended): run `npm install && npm run dev` and open `http://localhost:4321`
+6. **Open a pull request** against the `main` branch
+
+> Check existing posts in `src/content/blog/` for reference on style and structure.
 
 ## Project structure
 
